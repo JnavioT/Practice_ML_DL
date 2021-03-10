@@ -65,6 +65,16 @@ def recall(y_true,y_pred):
     return recall
 
 # For models it's recommended high precision and recall
+# However, it's difficult to select a ood treshold that gives both with high metrics.
+
+#F1 is a metric that combines both
+def f1(y_true,y_pred):
+    #F1 = 2PR/(P+R)
+    # or F1 = 2TP/(2TP+FP+FN)
+    p = precision(y_true,y_pred)
+    r = recall(y_true,y_pred)
+    f1_score = 2*p*r/(p+r)
+    return f1_score
 
 if __name__ == "__main__":
     y_train = [0,1,1,1,0,0,0,1]
