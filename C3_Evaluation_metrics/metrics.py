@@ -1,3 +1,5 @@
+import numpy as np 
+
 def accuracy(y_true,y_pred):
     correct_counter = 0
     for yt, yp in zip(y_true,y_pred):
@@ -67,7 +69,8 @@ def recall(y_true,y_pred):
 # For models it's recommended high precision and recall
 # However, it's difficult to select a ood treshold that gives both with high metrics.
 
-#F1 is a metric that combines both
+#F1 is a metric that combines both, ideally its value is 1.
+#F1 is used when datasets have skewed targets, instead of only accuracy.
 def f1(y_true,y_pred):
     #F1 = 2PR/(P+R)
     # or F1 = 2TP/(2TP+FP+FN)
@@ -75,6 +78,45 @@ def f1(y_true,y_pred):
     r = recall(y_true,y_pred)
     f1_score = 2*p*r/(p+r)
     return f1_score
+
+# TPR and FPR are useful to calculate ROC and ACU
+#TPR : True Positive Rate
+#FPR : False Positive Rate
+
+def tpr(y_true,y_pred):
+    # is the same as recall
+    return recall(y_true,y_pred)
+
+def fpr(y_true,y_pred):
+    fp = false_positive(y_true, y_pred)
+    tn = true_negative(y_true, y_pred)
+    return fp/(tn+fp)
+
+#Logloss
+
+def log_loss(y_true,y_proba):
+    # define an epsilon value
+    # this can also be an input
+    # this value is used to clip probabilities
+    epsilon = 1e-15
+    # initialize empty list to store
+    # individual losses
+    loss = []
+    # loop over all true and predicted probability values
+    for yt, yp in zip(y_true, y_proba):
+        # adjust probability
+        # 0 gets converted to 1e-15
+        # 1 gets converted to 1-1e-15
+        # Why? Think about it!
+        yp = np.clip(yp, epsilon, 1 - epsilon)
+        # calculate loss for one sample
+        temp_loss = - 1.0 * ( yt * np.log(yp) + (1 - yt) * np.log(1 - yp))
+        # add to loss list
+        loss.append(temp_loss)
+    # return mean loss over all samples
+    return np.mean(loss)
+
+
 
 if __name__ == "__main__":
     y_train = [0,1,1,1,0,0,0,1]
