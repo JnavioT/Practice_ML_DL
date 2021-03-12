@@ -9,8 +9,10 @@ BASE_DIR2 =  os.path.dirname(BASE_DIR)
 DATA_ADDRESS = os.path.join(BASE_DIR2, "input","mnist_train.csv")
 DATA_CONVERT_ADDRESS = os.path.join(BASE_DIR2,"input","mnist_train_folds.csv")
 
-##ok to ubuntu but other os ? -> use absolute path
+##ok to ubuntu but other os ? 
 #df = pd.read_csv("../input/mnist_train.csv")
+
+#-> using absolute path:
 df = pd.read_csv(DATA_ADDRESS)
 
 df["kfold"] = -1
@@ -21,4 +23,5 @@ for fold, (trn_, val_) in enumerate(kf.split(X=df)):
     df.loc[val_, 'kfold'] = fold
 
 #df.to_csv("../input/mnist_train_folds.csv", index=False)
+#-> using absolute path:
 df.to_csv(DATA_CONVERT_ADDRESS, index=False)
