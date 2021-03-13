@@ -4,12 +4,13 @@ import os
 from sklearn import metrics
 from sklearn import tree
 import config
+import argparse
+import model_dispatcher
 
-
-def run(fold):
+def run(fold, model):
     #read the data with folds:
     #df = pd.read_csv("../input/mnist_train_folds.csv")
-    df = pd.read_csv(config.DATA_ADD)
+    df = pd.read_csv(config.TRAINING_FILE)
 
     #training data is where kfold is not equal to provided fold
     df_train = df[df.kfold != fold].reset_index(drop = True)
@@ -25,7 +26,7 @@ def run(fold):
     y_valid = df_valid.label.values
 
     # initialize simple decision tree classifier from sklearn
-    clf = tree.DecisionTreeClassifier()
+    clf = model_dispatcher.models[model]
 
     # fit the model on training data
     clf.fit(x_train,y_train)
@@ -39,10 +40,18 @@ def run(fold):
 
     #save the model
     #joblib.dump(clf,f"../models/dt_{fold}.bin")
-    joblib.dump(clf,os.path.join(config.MODELS_ADD ,f"dt_{fold}.bin"))
+    joblib.dump(clf,os.path.join(config.MODELS_ADDRESS ,f"dt_{fold}.bin"))
 
 if __name__ == "__main__":
-    for i in range(5):
-        run(fold = i)
+
+    #initialize parser
+    parser = argparse.ArgumentParser()
+    #add arguments
+    parser.add_argument("--fold",type=int)
+    parser.add_argument("--model",type=str)
+    #read arguments from command line
+    args = parser.parse_args()
+    #run the fols in command lines
+    run(fold = args.fold, model=args.model)
 
 
