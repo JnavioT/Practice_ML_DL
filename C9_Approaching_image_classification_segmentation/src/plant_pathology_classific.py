@@ -68,6 +68,7 @@ if __name__ == "__main__":
 
     model = Model()
     model.to(args.device)
+
     mean = (0.485, 0.456, 0.406)
     std = (0.229, 0.224, 0.225)
 
@@ -77,7 +78,7 @@ if __name__ == "__main__":
     valid_loader = ClassificationDataLoader( image_paths=valid_images, targets=valid_targets, resize=(128, 128), augmentations=aug, ).fetch( batch_size=16, num_workers=4, drop_last=False, shuffle=False, tpu=False )
     optimizer = torch.optim.Adam(model.parameters(), lr=5e-4) 
     scheduler = torch.optim.lr_scheduler.StepLR( optimizer, step_size=15, gamma=0.6 )
-    
+
     for epoch in range(args.epochs):
         train_loss = Engine.train( train_loader, model, optimizer, device=args.device )
         valid_loss = Engine.evaluate( valid_loader, model, device=args.device )
