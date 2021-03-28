@@ -1,7 +1,7 @@
 import pandas as pd 
 
 from nltk.tokenize import word_tokenize
-from sklearn import linear_model
+from sklearn import naive_bayes
 from sklearn import metrics
 from sklearn import model_selection
 from sklearn.feature_extraction.text import CountVectorizer
@@ -17,7 +17,8 @@ if __name__ == "__main__":
     # fetch labels
     y = df.sentiment.values
     # initiate the kfold class from model_selection module
-    kf = model_selection.StratifiedKFold(n_splits=5)
+    #kf = model_selection.StratifiedKFold(n_splits=5)
+    kf = model_selection.KFold(n_splits=5)
     # fill the new kfold column
     for f, (t_,v_) in enumerate(kf.split(X = df, y=y)):
         df.loc[v_, 'kfold'] = f
@@ -35,8 +36,8 @@ if __name__ == "__main__":
         xtrain = count_vec.transform(train_df.review)
         xtest = count_vec.transform(test_df.review) #new words?
 
-        # initialize logistic regression model
-        model = linear_model.LogisticRegression()
+        # initialize naive bayes model
+        model = naive_bayes.MultinomialNB()
         # fit the model on training data reviews and sentiment
         model.fit(xtrain, train_df.sentiment)
 
@@ -55,10 +56,7 @@ if __name__ == "__main__":
         # Accuracy = 0.8948
         # Fold: 1
         # Accuracy = 0.8941
-        # Fold: 2
-        # Accuracy = 0.8899
-        # Fold: 3
-        # Accuracy = 0.8942
+
 
 
 

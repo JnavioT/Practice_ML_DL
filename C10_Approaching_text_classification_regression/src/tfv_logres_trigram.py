@@ -1,10 +1,10 @@
-import pandas as pd 
+import pandas as pd
 
 from nltk.tokenize import word_tokenize
 from sklearn import linear_model
 from sklearn import metrics
 from sklearn import model_selection
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 if __name__ == "__main__":
     df =  pd.read_csv("../input/imdb.csv")
@@ -17,53 +17,38 @@ if __name__ == "__main__":
     # fetch labels
     y = df.sentiment.values
     # initiate the kfold class from model_selection module
-    kf = model_selection.StratifiedKFold(n_splits=5)
+    #kf = model_selection.StratifiedKFold(n_splits=5)
+    kf = model_selection.KFold(n_splits=5)
     # fill the new kfold column
     for f, (t_,v_) in enumerate(kf.split(X = df, y=y)):
         df.loc[v_, 'kfold'] = f
     # we go over the folds created
     for fold_ in range(5):
+        # temporary dataframes for train and test
         train_df = df[df.kfold != fold_].reset_index(drop = True)
-        test_df = df[df.kfold ==fold_].reset_index(drop = True)
-        # initialize CountVectorizer with NLTK's word_tokenize
-        # function as tokenizer
-        count_vec = CountVectorizer(tokenizer=word_tokenize, token_pattern=None)
-        # fit count_vec on training data reviews
-        count_vec.fit(train_df.review)
+        test_df = df[df.kfold == fold_].reset_index(drop = True)
 
-        # transform training and validation data reviews
-        xtrain = count_vec.transform(train_df.review)
-        xtest = count_vec.transform(test_df.review) #new words?
+        tfidf_vec = TfidfVectorizer(tokenizer = word_tokenize, token_pattern = None, ngram_range= (1,3))
 
-        # initialize logistic regression model
+        tfidf_vec.fit(train_df.review)
+
+        xtrain = tfidf_vec.transform(train_df.review)
+        xtest = tfidf_vec.transform(test_df.review)
+
         model = linear_model.LogisticRegression()
-        # fit the model on training data reviews and sentiment
         model.fit(xtrain, train_df.sentiment)
 
-        # make predictions on test data
-        # threshold for predictions is 0.5
         preds = model.predict(xtest)
 
-        # calculate accuracy
-        accuracy = metrics.accuracy_score( test_df.sentiment, preds)
+        accuracy = metrics.accuracy_score(test_df.sentiment, preds)
 
         print(f"Fold: {fold_}")
         print(f"Accuracy = {accuracy}")
         print("")
 
         # Fold: 0
-        # Accuracy = 0.8948
+        # Accuracy = 0.8958
+
         # Fold: 1
-        # Accuracy = 0.8941
-        # Fold: 2
-        # Accuracy = 0.8899
-        # Fold: 3
-        # Accuracy = 0.8942
-
-
-
-
-        
-
-
+        # Accuracy = 0.8953
 
