@@ -53,9 +53,10 @@ if __name__ == "__main__":
         print("")
 
         # Fold: 0
-        # Accuracy = 0.8948
+        # Accuracy = 0.8429
+
         # Fold: 1
-        # Accuracy = 0.8941
+        # Accuracy = 0.847
 
 
 

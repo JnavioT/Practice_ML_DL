@@ -51,7 +51,6 @@ if __name__ == "__main__":
 
         # Fold: 1
         # Accuracy = 0.8952
-        
         # Fold: 2
         # Accuracy = 0.8933
 
